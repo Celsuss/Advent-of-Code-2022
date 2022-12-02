@@ -9,9 +9,6 @@ def getSharedItem(items1, items2):
     return None
 
 def getItemPriority(item: str):
-    l = ord(item) - 96
-    u = ord(item) - 64 + 26
-
     if item.islower():
         return ord(item) - 96
     return ord(item) - 64 + 26
@@ -25,10 +22,7 @@ def getPartOneSolution(backpacks):
         assert(len(items1) == len(items2))
 
         shared = getSharedItem(items1, items2)
-        priority = getItemPriority(shared)
-        priority_sum += priority
-
-        continue
+        priority_sum += getItemPriority(shared)
 
     return priority_sum
 
@@ -47,7 +41,6 @@ def getPartTwoSolution(backpacks):
     for packs in backpacks:
         badge = getSharedBadge(packs)
         priority_sum += getItemPriority(badge)
-        continue
 
     return priority_sum
 

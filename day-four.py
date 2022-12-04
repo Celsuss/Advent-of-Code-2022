@@ -52,7 +52,6 @@ def main():
     assert(res == 2)
     res = getPartTwoSolution(pairs)
     assert(res == 4)
-    
 
     """ Solutions """
     pairs = np.genfromtxt('data/day-4.txt', dtype=str)

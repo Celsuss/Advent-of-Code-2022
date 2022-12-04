@@ -28,17 +28,40 @@ def getPartOneSolution(pairs: np.array):
 
     return n_fully_contains
 
+def isOverlapping(start_1, end_1, start_2, end_2):
+    if start_1 > end_2:
+        return False
+    elif end_1 < start_2:
+        return False
+    return True
+
+def getPartTwoSolution(pairs: np.array):
+    n_overlap_pairs = 0
+
+    for pair in pairs:
+        pair = pair.split(',')
+        start_1, end_1 = getRangeInt(pair[0])
+        start_2, end_2 = getRangeInt(pair[1])
+        if isOverlapping(start_1, end_1, start_2, end_2):
+            n_overlap_pairs += 1
+
+    return n_overlap_pairs
+
 def main():
     """ Tests """
     pairs = np.genfromtxt('data/day-4-test.txt', dtype=str)
     res = getPartOneSolution(pairs)
     assert(res == 2)
+    res = getPartTwoSolution(pairs)
+    assert(res == 4)
     
 
     """ Solutions """
     pairs = np.genfromtxt('data/day-4.txt', dtype=str)
     res = getPartOneSolution(pairs)
     print('Part one solution: {}'.format(res))
+    res = getPartTwoSolution(pairs)
+    print('Part two solution: {}'.format(res))
 
     return 0
 

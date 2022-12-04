@@ -24,8 +24,6 @@ def getPartOneSolution(pairs: np.array):
         if isFullyContained(start_1, end_1, start_2, end_2):
             n_fully_contains += 1
 
-        continue
-
     return n_fully_contains
 
 def isOverlapping(start_1, end_1, start_2, end_2):
@@ -62,8 +60,6 @@ def main():
     print('Part one solution: {}'.format(res))
     res = getPartTwoSolution(pairs)
     print('Part two solution: {}'.format(res))
-
-    return 0
 
 if __name__ == '__main__':
     main()

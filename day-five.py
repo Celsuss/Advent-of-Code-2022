@@ -8,7 +8,6 @@ def getData(path):
         return 0
     
     def getCrates(lines, n_crates):
-        # crates = [[]] * n_crates
         crates = [[] for i in range(n_crates)]
 
         for line in lines:
@@ -40,13 +39,38 @@ def getData(path):
         crates = getCrates(lines, n_crates)
         moves = getMoves(lines)
 
-    return 0
+    return crates, moves
+
+def getDayOneSolution(crates, moves):
+    reverseCrates(crates)
+    for n_crates, start_crate, target_crate in moves:
+        for i in range(n_crates):
+            crate = crates[start_crate-1].pop()
+            crates[target_crate-1].append(crate)
+            continue
+
+    return getTopCratesStr(crates)
+
+def reverseCrates(crates):
+    for crate in crates:
+        crate = crate.reverse()
+
+def getTopCratesStr(crates):
+    out = ''
+    for crate in crates:
+        out += crate[-1]
+    return out
 
 def main():
     """ Tests """
-    data = getData('data/day-5-test.txt')
+    crates, moves = getData('data/day-5-test.txt')
+    res = getDayOneSolution(crates[:], moves)
+    assert(res == 'CMZ')
 
     """ Solutions """
+    crates, moves = getData('data/day-5.txt')
+    res = getDayOneSolution(crates[:], moves)
+    print('Part one solution: {}'.format(res))
 
     return 0
 

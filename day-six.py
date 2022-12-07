@@ -23,6 +23,9 @@ def getIndexOfFirstNRepeating(buffer_full, n):
 def getPartOneSolution(buffer):
     return getIndexOfFirstNRepeating(buffer, 4)
 
+def getPartTwoSolution(buffer):
+    return getIndexOfFirstNRepeating(buffer, 14)
+
 def getBuffer(path):
     with open(path) as f:
         buffer = f.readlines()[0]
@@ -33,11 +36,18 @@ def main():
     buffer = getBuffer('data/day-6-test.txt')
     res = getPartOneSolution(buffer)
     assert(res == 7)
+    res = getPartTwoSolution(buffer)
+    assert(res == 19)
 
     """ Solutions """
     buffer = getBuffer('data/day-6.txt')
     res = getPartOneSolution(buffer)
     print('Part one solution: {}'.format(res))
+    assert(res == 1655)
+
+    res = getPartTwoSolution(buffer)
+    print('Part two solution: {}'.format(res))
+    assert(res == 2665)
 
     return 0
 

@@ -30,6 +30,7 @@ def getDirStructure(log):
             root_node = DirNode('/')
             stack = [root_node]
             dirs_que.append(root_node)
+
         elif line[:7] == '$ cd ..':
             stack.pop()
             
@@ -38,15 +39,12 @@ def getDirStructure(log):
             stack[-1]._dirs.append(dir_node)
             stack.append(dir_node)
             dirs_que.append(dir_node)
-            # print('Added node {}'.format(dir_node._name))
 
         elif line[:4] == '$ ls':
-            # List directory content
             files, dirs, i = parseLsCommand(log, i+1)
             stack[-1]._files = files
-            # stack[-1]._dirs = dirs
 
-    return root_node, dirs_que
+    return dirs_que
 
 def getDirectoryFilesSizeSum(files):
     size_sum = 0
@@ -66,15 +64,13 @@ def getDirectoryNodeSum(node):
 
 def getPartOneSolution(log):
     size_limit = 100000
-    root_node, dirs_que = getDirStructure(log)
+    dirs_que = getDirStructure(log)
     
     size_sum = 0
     for node in dirs_que:
         dir_size = getDirectoryNodeSum(node)
         if dir_size <= size_limit:
             size_sum += dir_size
-
-        continue
 
     return size_sum
 
@@ -86,13 +82,14 @@ def main():
     """ Tests """
     log = getInput('data/day-7-test.txt')
     res = getPartOneSolution(log)
-    assert(res == 95437)
+    assert res == 95437, 'Part one test is incorrect'
 
 
     """ Solutions """
     log = getInput('data/day-7.txt')
     res = getPartOneSolution(log)
     print('Part one solution: {}'.format(res))
+    assert res == 1844187, 'Part one solution is incorrect'
 
     return 0
 

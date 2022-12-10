@@ -1,5 +1,5 @@
 
-class Dir_node:
+class DirNode:
     def __init__(self, name) -> None:
         self._name = name
         self._dirs = []
@@ -20,27 +20,33 @@ def getDirStructure(log):
                 line = log[i]
         return files, dirs, i-1
 
-    # TODO: Remove stack?
+    root_node = None
     stack = []
-    dirs_dict = {}
+    dirs_que = []
 
     for i in range(len(log)):
         line = log[i]
-        if line[:7] == '$ cd ..':
+        if line == '$ cd /\n':
+            root_node = DirNode('/')
+            stack = [root_node]
+            dirs_que.append(root_node)
+        elif line[:7] == '$ cd ..':
             stack.pop()
-        elif line[:8] == '$ cd /':
-            stack = [stack[0]]
+            
         elif line[:4] == '$ cd':
-            # Enter directory
-            stack.append(Dir_node(line[5:-1]))
-            dirs_dict[line[5:-1]] = stack[-1]
+            dir_node = DirNode(line[5:-1]) 
+            stack[-1]._dirs.append(dir_node)
+            stack.append(dir_node)
+            dirs_que.append(dir_node)
+            # print('Added node {}'.format(dir_node._name))
+
         elif line[:4] == '$ ls':
             # List directory content
             files, dirs, i = parseLsCommand(log, i+1)
             stack[-1]._files = files
-            stack[-1]._dirs = dirs
+            # stack[-1]._dirs = dirs
 
-    return dirs_dict
+    return root_node, dirs_que
 
 def getDirectoryFilesSizeSum(files):
     size_sum = 0
@@ -49,28 +55,28 @@ def getDirectoryFilesSizeSum(files):
         size_sum += size
     return size_sum
 
-def getDirectorySum(dirs_dict, directory):
-    files_size = getDirectoryFilesSizeSum(directory._files)
-    dirs_size = 0
-    for dir_name in directory._dirs:
-        dirs_size += getDirectorySum(dirs_dict, dirs_dict[dir_name])
-
-    return files_size + dirs_size
-
-def getDirectoriesSum(dirs_dict, size_limit):
-    total_sum = 0
-    for key in dirs_dict:
-        d = dirs_dict[key]
-        dir_sum = getDirectorySum(dirs_dict, d)
-        if dir_sum <= size_limit:
-            total_sum += dir_sum
-
+def getDirectoryNodeSum(node):
+    files_sum = getDirectoryFilesSizeSum(node._files)
+    dir_sum = 0
+    for d in node._dirs:
+        dir_sum += getDirectoryNodeSum(d)
+    
+    total_sum = files_sum + dir_sum
     return total_sum
 
 def getPartOneSolution(log):
-    dirs_dict = getDirStructure(log)
-    dirs_sum = getDirectoriesSum(dirs_dict, 100000)
-    return dirs_sum
+    size_limit = 100000
+    root_node, dirs_que = getDirStructure(log)
+    
+    size_sum = 0
+    for node in dirs_que:
+        dir_size = getDirectoryNodeSum(node)
+        if dir_size <= size_limit:
+            size_sum += dir_size
+
+        continue
+
+    return size_sum
 
 def getInput(path):
     f = open(path)
@@ -86,8 +92,7 @@ def main():
     """ Solutions """
     log = getInput('data/day-7.txt')
     res = getPartOneSolution(log)
-    assert(res > 1587563)
-    print('Part one solution: {}'.format(res))  # 1587563 too low
+    print('Part one solution: {}'.format(res))
 
     return 0
 

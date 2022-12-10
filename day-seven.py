@@ -75,10 +75,22 @@ def getPartOneSolution(log):
     return size_sum
 
 def getPartTwoSolution(log):
+    dirs_que = getDirStructure(log)
     total_size = 70000000
-    target_size = 30000000
+    needed_size = 30000000
+    used_size = getDirectoryNodeSum(dirs_que[0])
+    target_size = needed_size - (total_size - used_size)
 
-    return 0
+    target_dir_size = None
+
+    for node in dirs_que:
+        size = getDirectoryNodeSum(node)
+        if size >= target_size and \
+            (target_dir_size is None or size < target_dir_size):
+            target_dir_size = size
+
+        continue
+    return target_dir_size
 
 def getInput(path):
     f = open(path)
@@ -89,6 +101,8 @@ def main():
     log = getInput('data/day-7-test.txt')
     res = getPartOneSolution(log)
     assert res == 95437, 'Part one test is incorrect'
+    res = getPartTwoSolution(log)
+    assert res == 24933642, 'Part two test is incorrect'
 
 
     """ Solutions """
@@ -96,6 +110,8 @@ def main():
     res = getPartOneSolution(log)
     print('Part one solution: {}'.format(res))
     assert res == 1844187, 'Part one solution is incorrect'
+    res = getPartTwoSolution(log)
+    print('Part two solution: {}'.format(res))
 
     return 0
 

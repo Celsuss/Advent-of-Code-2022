@@ -74,6 +74,12 @@ def getPartOneSolution(log):
 
     return size_sum
 
+def getPartTwoSolution(log):
+    total_size = 70000000
+    target_size = 30000000
+
+    return 0
+
 def getInput(path):
     f = open(path)
     return f.readlines()

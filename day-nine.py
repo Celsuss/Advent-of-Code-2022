@@ -27,31 +27,39 @@ def getNewTailLocation(head_pos, tail_pos):
                 tail_pos[1] + direction[1])
     return tail_pos
 
-def processMove(move, head_pos, tail_pos, visited_locations: set):
+def processMove(move, rope, visited_locations: set):
     visited_locations.add((0,0))
     steps = move[1]
     direction = move[0]
+
     for i in range(steps):
-        head_pos = getNewHeadLocation(direction, head_pos)
-        tail_pos = getNewTailLocation(head_pos, tail_pos)
+        rope[0] = getNewHeadLocation(direction, rope[0])
+        for i in range(1, len(rope)):
+            rope[i] = getNewTailLocation(rope[i-1], rope[i])
+
+        tail_pos = rope[-1]
         if tail_pos not in visited_locations:
             visited_locations.add(tail_pos)
 
-    return head_pos, tail_pos
+    # return head_pos, tail_pos
 
-def getVisitedLocations(moves, x=0, y=0):
+def getVisitedLocations(moves, rope):
     visited_locations = set()
-    head_pos = (x, y)
-    tail_pos = (x, y)
 
     for move in moves:
-        head_pos, tail_pos = processMove(move, head_pos, tail_pos, visited_locations)
+        processMove(move, rope, visited_locations)
         continue
 
     return len(visited_locations)
 
 def getPartOneSolution(moves):
-    visited_locations = getVisitedLocations(moves)
+    rope = [(0,0) for i in range(2)]
+    visited_locations = getVisitedLocations(moves, rope)
+    return visited_locations
+
+def getPartTwoSolution(moves):
+    rope = [(0,0) for i in range(10)]
+    visited_locations = getVisitedLocations(moves, rope)
     return visited_locations
 
 def getInput(path):
@@ -68,11 +76,17 @@ def main():
     moves = getInput('data/day-9-test.txt')
     res = getPartOneSolution(moves)
     assert res == 13, 'Part one test is incorrect'
+    res = getPartTwoSolution(moves)
+    assert res == 1, 'Part two test is incorrect'
 
     """ Solutions """
     moves = getInput('data/day-9.txt')
     res = getPartOneSolution(moves)
     print('Part one solution: {}'.format(res))
+    assert res == 6745, 'Part one is incorrect'
+    res = getPartTwoSolution(moves)
+    print('Part two solution: {}'.format(res))
+    assert res == 2793, 'Part two is incorrect'
 
     return 0
 

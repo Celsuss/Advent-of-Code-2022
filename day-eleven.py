@@ -25,11 +25,12 @@ def processInspection(item, operation):
     val = int(operation[1])
     return op(item, val)
 
-def processMonkeyInspections(monkey, monkeys):
+def processMonkeyInspections(monkey, monkeys, can_divide=True):
     for item in monkey.items:
         monkey.n_inspections += 1
         item = processInspection(item, monkey.operation)
-        item = int(item / 3)
+        if can_divide:
+            item = int(item / 3)
         if item % monkey.test == 0:
             monkeys[monkey.if_true].items.append(item)
         else:
@@ -40,10 +41,10 @@ def processMonkeyInspections(monkey, monkeys):
     monkey.items = []
     return
 
-def processMonkeys(monkeys, n_rounds):
+def processMonkeys(monkeys, n_rounds, can_divide=True):
     for i in range(n_rounds):
         for monkey in monkeys:
-            processMonkeyInspections(monkey, monkeys)
+            processMonkeyInspections(monkey, monkeys, can_divide)
             continue
         continue
 
@@ -72,6 +73,11 @@ def getTopNActiveMonkeys(monkeys, n):
 
 def getPartOneSolution(monkeys):
     monkeys = processMonkeys(monkeys, 20)
+    top_monkeys = getTopNActiveMonkeys(monkeys, 2)
+    return top_monkeys[0].n_inspections * top_monkeys[1].n_inspections
+
+def getPartTwoSolution(monkeys):
+    monkeys = processMonkeys(monkeys, 10000, can_divide=False)
     top_monkeys = getTopNActiveMonkeys(monkeys, 2)
     return top_monkeys[0].n_inspections * top_monkeys[1].n_inspections
 
@@ -109,11 +115,20 @@ def main():
     res = getPartOneSolution(monkeys)
     assert res == 10605, 'Part one test is incorrect'
 
+    monkeys = getInput('data/day-11-test.txt')
+    res = getPartTwoSolution(monkeys)
+    assert res == 2713310158, 'Part two test is incorrect'
+    print('Tests done')
+
     """ Solutions """
     monkeys = getInput('data/day-11.txt')
     res = getPartOneSolution(monkeys)
     print('Part one solution: {}'.format(res))
     assert res == 78960
+
+    monkeys = getInput('data/day-11.txt')
+    res = getPartTwoSolution(monkeys)
+    print('Part two solution: {}'.format(res))
 
     return 0
 

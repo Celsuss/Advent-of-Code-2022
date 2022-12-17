@@ -1,3 +1,4 @@
+from functools import reduce
 import operator
 
 OPERATORS = {
@@ -26,17 +27,20 @@ def processInspection(item, operation):
     return op(item, val)
 
 def processMonkeyInspections(monkey, monkeys, can_divide=True):
+    var = reduce(lambda accu, m: accu * m.test, monkeys, 1) if can_divide is False else None
     for item in monkey.items:
         monkey.n_inspections += 1
+        
         item = processInspection(item, monkey.operation)
         if can_divide:
-            item = int(item / 3)
+            item = item // 3
+        else:
+            item = item % var
+
         if item % monkey.test == 0:
             monkeys[monkey.if_true].items.append(item)
         else:
             monkeys[monkey.if_false].items.append(item)
-
-        continue
 
     monkey.items = []
     return
@@ -117,7 +121,7 @@ def main():
 
     monkeys = getInput('data/day-11-test.txt')
     res = getPartTwoSolution(monkeys)
-    assert res == 2713310158, 'Part two test is incorrect'
+    assert res == 2713310158, 'Part two test is incorrect, is {}'.format(res)
     print('Tests done')
 
     """ Solutions """

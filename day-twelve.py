@@ -1,72 +1,107 @@
 
-class TreeNode:
-    def __init__(self, val: int, x: int, y: int) -> None:
-        self.val = val
-        self.nodes = []
-        self.x = x
-        self.y = y
+class Node:
+    def __init__(self, pos: tuple(int, int)) -> None:
+        self.pos = pos
+        self.G = None
+        self.H = None
+        self.F = None
 
-def solvePartOne(grid):
+def isAccessible(current: int, target: int) -> bool:
+    if target - current <= 1:
+        return True
+    return False
 
-    return 0
+def getG(parent_node: Node) -> int:
+    """ g = move cost from starting node to node """
+    return parent_node.g + 1
 
-""" Load data functions """
+def getH(node_pos: tuple(int, int), target_pos: tuple(int, int)) -> int:
+    """ h = estimate cost from node to target node (manhattan distance) """
+    return (target_pos[0] - node_pos[0]) + (target_pos[1] - node_pos[1])
 
-def convertCharToInt(c):
-    if c == 'S':
-        return 1
-    elif c == 'Z':
-        return 26
-    n = ord(c) - 96
-    return 0
+def getF(g: int, h: int) -> int:
+    """ f = sum(g, h)"""
+    return g + h
 
-def appendTreeNode(parent_node: TreeNode, node_val: int, x: int, y: int, que):
-    # TODO: Make sure you don't add parent node
-    if parent_node.val - node_val > 1:
-        return
-    node = TreeNode(node_val, x, y)
-    parent_node.nodes.append(node)
-    que.append(node)
+def getNextNode(open_list: list[list[Node]]):
+    """ Return node with lowest F Cost """
 
-def createTree(grid):
-    root_node = TreeNode(grid[0][0], 0, 0)
-    que = [root_node]
+def aStar(grid: list[list[chr]], start: tuple(int, int), target: tuple(int, int)):
+    """
+    A*
+    1. Get node N with lowest F score in open list
+    2. Remove node N from open list
+    3. For each neighbor to node N
+        3.1. If neighbor is target then stop
+        3.2. Calculate G, H, F for neighbor
+        3.3. Ignore if neighbor already exists with lower F score in open or closed
+        3.4. Add neighbor to open list
+    4. Push node N to closed list
+    """
+    open_list = [grid[start[0]][start[1]]]
+    closed_list = []
 
-    while len(que) > 0:
-        node = que[0]
-        que.pop(0)
-        x, y = node.x, node.y
-
-        if x > 0:
-            left_val = grid[y][x-1]
-            appendTreeNode(node, left_val, x, y, que)
-        if x < len(grid[y]):
-            right_val = grid[y][x+1]
-            appendTreeNode(node, right_val, x, y, que)
-        if y > 0:
-            up_val = grid[y-1][x]
-            appendTreeNode(node, up_val, x, y, que)
-        if y < len(grid):
-            down_val = grid[y+1][x]
-            appendTreeNode(node, down_val, x, y, que)
+    while len(open_list) > 0:
+        node = open_list.pop(0)
 
 
         continue
 
     return 0
 
+def solvePartOne(grid, start, target):
+    return aStar(grid, start, target)
+
+""" Load data functions """
+
+def convertCharToInt(c):
+    if c == 'S':
+        return 1
+    elif c == 'E':
+        return 26
+    n = ord(c) - 96
+    return n
+
+def getGridFromInput(lines):
+    grid = []
+    for line in lines:
+        grid_row = []
+        for c in line:
+            grid_row.append(convertCharToInt(c))
+        grid.append(grid_row)
+
+    return grid
+
+def getStartAndTarget(lines):
+    start = None
+    target = None
+
+    for i in range(len(lines)):
+        line = lines[i]
+        for j in range(len(line)):
+            c = line[j]
+            if c == 'S':
+                start = (i, j)
+            elif c == 'E':
+                target = (i, j)
+
+    return start, target
+
 def getInput(path):
     with open(path) as f:
         lines = f.readlines()
-    grid = [c for line in lines for c in line]
-    return createTree(grid)
+
+    lines = [line[:-1] if '\n' in line else line for line in lines]     # Remove '\n'
+    grid = getGridFromInput(lines)
+    start, target = getStartAndTarget(lines)
+    return grid, start, target
 
 """ Main """
 
 def main():
     """ Tests """
-    grid = getInput('data/day-12-test.txt')
-    res = solvePartOne(grid)
+    grid, start, target = getInput('data/day-12-test.txt')
+    res = solvePartOne(grid, start, target)
     assert res == 31, 'Part one test is incorrect, \
                         is {} but should be 31'.format(res)
 

@@ -1,6 +1,6 @@
 
 class Node:
-    def __init__(self, pos: tuple(int, int)) -> None:
+    def __init__(self, pos: tuple((int, int))) -> None:
         self.pos = pos
         self.G = None
         self.H = None
@@ -15,7 +15,7 @@ def getG(parent_node: Node) -> int:
     """ g = move cost from starting node to node """
     return parent_node.g + 1
 
-def getH(node_pos: tuple(int, int), target_pos: tuple(int, int)) -> int:
+def getH(node_pos: tuple((int, int)), target_pos: tuple((int, int))) -> int:
     """ h = estimate cost from node to target node (manhattan distance) """
     return (target_pos[0] - node_pos[0]) + (target_pos[1] - node_pos[1])
 
@@ -26,7 +26,7 @@ def getF(g: int, h: int) -> int:
 def getNextNode(open_list: list[list[Node]]):
     """ Return node with lowest F Cost """
 
-def aStar(grid: list[list[chr]], start: tuple(int, int), target: tuple(int, int)):
+def aStar(grid: list[list[chr]], start: tuple((int, int)), target: tuple((int, int))):
     """
     A*
     1. Get node N with lowest F score in open list
@@ -106,7 +106,7 @@ def main():
                         is {} but should be 31'.format(res)
 
     """ Solutions """
-    grid = getInput('data/day-12-test.txt')
+    grid = getInput('data/day-12.txt')
     res = solvePartOne(grid)
     print('Part one solution: {}'.format(res))
 

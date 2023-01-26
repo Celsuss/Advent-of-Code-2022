@@ -1,10 +1,19 @@
 
+posTuple = tuple((int, int))
+chrGrid = list[list[chr]]
+
 class Node:
-    def __init__(self, pos: tuple((int, int))) -> None:
+    def __init__(self, pos: posTuple, height: int) -> None:
         self.pos = pos
+        self.height = height
         self.G = None
         self.H = None
         self.F = None
+
+nodeList = list[Node]
+
+def getHeight(pos: posTuple, grid: chrGrid):
+    return grid[pos[1]][pos[0]]
 
 def isAccessible(current: int, target: int) -> bool:
     if target - current <= 1:
@@ -15,7 +24,7 @@ def getG(parent_node: Node) -> int:
     """ g = move cost from starting node to node """
     return parent_node.g + 1
 
-def getH(node_pos: tuple((int, int)), target_pos: tuple((int, int))) -> int:
+def getH(node_pos: posTuple, target_pos: posTuple) -> int:
     """ h = estimate cost from node to target node (manhattan distance) """
     return (target_pos[0] - node_pos[0]) + (target_pos[1] - node_pos[1])
 
@@ -23,10 +32,37 @@ def getF(g: int, h: int) -> int:
     """ f = sum(g, h)"""
     return g + h
 
-def getNextNode(open_list: list[list[Node]]):
+def addNeighbors(pos: posTuple, height: int, grid: chrGrid):
     """ Return node with lowest F Cost """
+    neighbors = []
+    top_n_pos = (pos[1]-1, pos[0])
+    right_n_pos = (pos[1], pos[0]+1)
+    bot_n_pos = (pos[1]+1, pos[0])
+    left_n_pos = (pos[1], pos[0]-1)
 
-def aStar(grid: list[list[chr]], start: tuple((int, int)), target: tuple((int, int))):
+    if top_n_pos[0] > 0 and \
+        isAccessible(height, getHeight(top_n_pos, grid)):
+        neighbors.append(Node(top_n_pos, getHeight(top_n_pos, grid)))
+
+    if right_n_pos[1] < len(grid[0])-1 and \
+        isAccessible(height, getHeight(right_n_pos, grid)):
+        neighbors.append(Node(right_n_pos, getHeight(right_n_pos, grid)))
+
+    if bot_n_pos[0] < len(grid)-1 and \
+        isAccessible(height, getHeight(bot_n_pos, grid)):
+        neighbors.append(Node(bot_n_pos, getHeight(bot_n_pos, grid)))
+
+    if left_n_pos[1] > 0 and \
+        isAccessible(height, getHeight(left_n_pos, grid)):
+        neighbors.append(Node(left_n_pos, getHeight(left_n_pos, grid)))
+
+    return neighbors
+
+def processNeighbors(neighbors: nodeList, open_list: nodeList, closed_list: nodeList):
+
+    return 0
+
+def aStar(grid: chrGrid, start: posTuple, target: posTuple):
     """
     A*
     1. Get node N with lowest F score in open list
@@ -38,11 +74,14 @@ def aStar(grid: list[list[chr]], start: tuple((int, int)), target: tuple((int, i
         3.4. Add neighbor to open list
     4. Push node N to closed list
     """
-    open_list = [grid[start[0]][start[1]]]
+    start_node = Node(start, getHeight(start, grid))
+    open_list = [start_node]
     closed_list = []
 
     while len(open_list) > 0:
         node = open_list.pop(0)
+        neighbors = addNeighbors(node.pos, node.height, grid)
+        processNeighbors(neighbors, open_list, closed_list)
 
 
         continue

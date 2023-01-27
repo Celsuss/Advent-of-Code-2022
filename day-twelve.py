@@ -28,11 +28,11 @@ def getH(node_pos: posTuple, target_pos: posTuple) -> int:
     """ h = estimate cost from node to target node (manhattan distance) """
     return (target_pos[0] - node_pos[0]) + (target_pos[1] - node_pos[1])
 
-def getF(g: int, h: int) -> int:
+def getF(node: Node) -> int:
     """ f = sum(g, h)"""
-    return g + h
+    return node.G + node.H
 
-def addNeighbors(pos: posTuple, height: int, grid: chrGrid):
+def addNeighbors(pos: posTuple, height: int, grid: chrGrid) -> nodeList:
     """ Return node with lowest F Cost """
     neighbors = []
     top_n_pos = (pos[1]-1, pos[0])
@@ -58,9 +58,24 @@ def addNeighbors(pos: posTuple, height: int, grid: chrGrid):
 
     return neighbors
 
-def processNeighbors(neighbors: nodeList, open_list: nodeList, closed_list: nodeList):
+def getBetterNode(nodes: nodeList, node: Node):
+    for n in nodes:
+        if n.pos == node.pos:
+            if n.F < node.F:
+                return n
+            else:
+                break
+    return None
 
-    return 0
+def getLowestFScoreNode(nodes: nodeList):
+    """ Return node with lowest F Score """
+    if len(nodes) == 0:
+        return None
+    res = nodes[0].F
+    for node in nodes[1:]:
+        if node.F < res.F:
+            res = node
+    return res
 
 def aStar(grid: chrGrid, start: posTuple, target: posTuple):
     """
@@ -79,11 +94,21 @@ def aStar(grid: chrGrid, start: posTuple, target: posTuple):
     closed_list = []
 
     while len(open_list) > 0:
-        node = open_list.pop(0)
+        node = getLowestFScoreNode(open_list)
+        open_list.remove(node)
         neighbors = addNeighbors(node.pos, node.height, grid)
-        processNeighbors(neighbors, open_list, closed_list)
+        for neighbor in neighbors:
+            if neighbor.pos == target:
+                break
+            neighbor.G = getG(node)
+            neighbor.H = getH(target)
+            neighbor.F = getF(neighbor)
+            if getBetterNode(open_list, node) is not None:
+                continue
+            open_list.append(neighbor)
+            continue
 
-
+        closed_list.append(node)
         continue
 
     return 0

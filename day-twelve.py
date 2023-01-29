@@ -9,6 +9,7 @@ class Node:
         self.g = 0
         self.h = 0
         self.f = 0
+        self.parent = None
 
 nodeList = list[Node]
 
@@ -90,6 +91,7 @@ def aStar(grid: chrGrid, start: posTuple, target: posTuple):
     4. Push node N to closed list
     """
     start_node = Node(start, getHeight(start, grid))
+    target_node = None
     open_list = [start_node]
     closed_list = []
 
@@ -98,22 +100,44 @@ def aStar(grid: chrGrid, start: posTuple, target: posTuple):
         open_list.remove(node)
         neighbors = addNeighbors(node.pos, node.height, grid)
         for neighbor in neighbors:
-            if neighbor.pos == target:
-                return node.g + 1
-
+            neighbor.parent = node
             neighbor.g = getG(node)
             neighbor.h = getH(node.pos, target)
             neighbor.f = getF(neighbor)
+
+            if neighbor.pos == target:
+                target_node = neighbor
+                break
             if getNodeWithLowerFScore(open_list, neighbor) is None and \
                 getNodeWithLowerFScore(closed_list, neighbor) is None:
                 open_list.append(neighbor)
 
         closed_list.append(node)
 
-    return 0
+    return target_node
 
 def solvePartOne(grid, start, target):
-    return aStar(grid, start, target)
+    target_node = aStar(grid, start, target)
+    return target_node.g
+
+def getAllANodes(grid):
+    nodes = []
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            pos = (j,i)
+            height = getHeight(pos, grid)
+            if height == 1:
+                nodes.append(Node(pos, height))
+    return nodes
+
+def solvePartTwo(grid, target):
+    """ 1. Get all potential starting positions
+        2. Get the path from any node in starting_list
+        3. Remove all potential starting points in the path from starting_list
+        4. Go back to 2 """
+    starting_list = getAllANodes(grid)
+
+    return 0
 
 """ Load data functions """
 
@@ -167,13 +191,18 @@ def main():
     res = solvePartOne(grid, start, target)
     assert res == 31, 'Part one test is incorrect, \
                         is {} but should be 31'.format(res)
+    res = solvePartTwo(grid, target)
+    assert res == 29, 'Part two test is incorrect, \
+                        is {} but should be 29'.format(res)
 
     """ Solutions """
     grid, start, target = getInput('data/day-12.txt')
     res = solvePartOne(grid, start, target)
-    print('Part one solution: {}'.format(res))
+    print('Part two solution: {}'.format(res))
     assert res == 504, 'Part one is incorrect, \
                         is {} but should be 504'.format(res)
+    res = solvePartTwo(grid, target)
+    print('Part two solution: {}'.format(res))
 
     return 0
 

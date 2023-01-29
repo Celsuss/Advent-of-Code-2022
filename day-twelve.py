@@ -116,11 +116,12 @@ def aStar(grid: chrGrid, start: posTuple, target: posTuple):
 
     return target_node
 
-def solvePartOne(grid, start, target):
+def solvePartOne(grid, start, target) -> int:
     target_node = aStar(grid, start, target)
     return target_node.g
 
-def getAllANodes(grid):
+def getAllANodes(grid) -> nodeList:
+    """ Return all nodes with height == 1 """
     nodes = []
     for i in range(len(grid)):
         for j in range(len(grid[i])):
@@ -130,14 +131,42 @@ def getAllANodes(grid):
                 nodes.append(Node(pos, height))
     return nodes
 
-def solvePartTwo(grid, target):
+def getFirstParentStartNode(node: Node) -> Node:
+    """ Return the first parent with height == 1 """
+    while node.height != 1:
+        node = node.parent
+    return node
+
+def cleanStartingList(starting_list: nodeList, target_node: Node):
+    """ Remove every node N from starting_list that if N is any of target_node parents """
+    while target_node is not None:
+        for node in starting_list:
+            if target_node.pos == node.pos:
+                starting_list.remove(node)
+        target_node = target_node.parent
+
+def solvePartTwo(grid, target) -> int:
     """ 1. Get all potential starting positions
         2. Get the path from any node in starting_list
         3. Remove all potential starting points in the path from starting_list
         4. Go back to 2 """
     starting_list = getAllANodes(grid)
+    best_start_node = None
+    best_target_node = None
+    
+    for start_node in starting_list:
+        target_node = aStar(grid, start_node.pos, target)
+        start_node = getFirstParentStartNode(target_node)
+        cleanStartingList(starting_list, target_node)
 
-    return 0
+        # TODO: Calculate new g score for target_node using start_node
+
+        if best_target_node is None or target_node.g < best_target_node.g:
+            best_start_node = start_node
+            best_target_node = target_node
+        continue
+
+    return best_target_node.g
 
 """ Load data functions """
 
